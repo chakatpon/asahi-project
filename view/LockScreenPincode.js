@@ -8,15 +8,22 @@ import {
     Image,
     ImageBackground,
     Dimensions,
-    Text
+    Text,
+    Alert
 } from 'react-native';
-const { width, height } = Dimensions.get('window')
+import axios   from 'axios';
+const { width, height } = Dimensions.get('window');
+
+const endpoint  = 'https://asahigame.dev.kanda.digital/api';
+const apiKey    = '818EY26UYbZEYPZ76QwH4nVcTCtsLpYMnJQuI7Jn';
+const deviceUID = 'f8e36bab-66af-43fb-8e6b-4d66415687bc';
 export default class LockScreenPinCode extends Component {
 
   constructor(props){
     super(props);
     this.state = {
-      pincode: ['','','','','','']
+      pincode: ['','','','','',''],
+      isLoading: false
     };
   }
   //  [pincode, setPincode] = useState([])
@@ -123,7 +130,49 @@ export default class LockScreenPinCode extends Component {
     }
 
     login = () => {
-      this.props.navigation.navigate('Home')
+      this.setState({
+        ...this.state,
+        isLoading: true
+      })
+      const {pincode} = this.state;
+      const pin = `${pincode[0]}${pincode[1]}${pincode[2]}${pincode[3]}${pincode[4]}${pincode[5]}`
+      console.log('PIN : ',pin)
+      axios({
+        method: 'post',
+        url: `${endpoint}/events/auth`,
+        data: {
+          "pin" : pin
+      },
+        headers: {'X-Requested-With':'XMLHttpRequest',
+                  'x-api-key':apiKey,
+                  'x-device-uid':deviceUID}
+      }).then((res) => {
+        console.log("RESPONSE PIN RECEIVED: ", res.data);
+        const access_token = res.data.access_token
+        if(!access_token) {
+          this.wrongPIN()
+        }else {
+          this.setState({...this.state, pincode: ['','','','','','']})
+          this.props.navigation.navigate('Home')
+        }
+      })
+      .catch((err) => {
+        console.log("AXIOS PIN ERROR: ", err);
+        this.wrongPIN();
+      });
+      // this.props.navigation.navigate('Home')
+    }
+
+    wrongPIN = () => {
+      Alert.alert(
+        'รหัส PIN ไม่ถูกต้อง',
+        'กรุณาลองใหม่',
+        [
+          {text: 'ตกลง', onPress: () => this.setState({...this.state, pincode: ['','','','','','']})},
+          {text: 'ปิด', onPress: () => this.setState({...this.state, pincode: ['','','','','','']})},
+        ],
+        { cancelable: false });
+        return true;
     }
       
     render() {
