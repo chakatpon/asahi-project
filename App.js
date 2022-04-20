@@ -32,22 +32,25 @@ export default function App() {
 
   const endpoint  = 'https://asahigame.dev.kanda.digital/api';
   const apiKey    = '818EY26UYbZEYPZ76QwH4nVcTCtsLpYMnJQuI7Jn';
-  const deviceUID = 'f8e36bab-66af-43fb-8e6b-4d66415687bc';
+  const deviceUID = DeviceInfo.getUniqueId();
+  const deviceName = DeviceInfo.getDeviceNameSync();
 
   useEffect(() => {
-    let uniqueId = DeviceInfo.getUniqueId();
-    setUniqueId(uniqueId);
-    console.log("UniqueID : ",uniqueId)
+    console.log("deviceUID : ",deviceUID)
+    console.log("DeviceName : ",deviceName)
     checkDeviceID();
   },[])
 
   const checkDeviceID = () => {
+
+    console.log("deviceUID checkDeviceID : ",deviceUID)
+    console.log("DeviceName checkDeviceID : ",deviceName)
     axios({
       method: 'post',
       url: `${endpoint}/devices/request`,
       data: {
         "device_uid" : deviceUID,
-        "device_name" : "Asahi-Android-01"
+        "device_name" : deviceName
     },
       headers: {'X-Requested-With':'XMLHttpRequest',
                 'x-api-key':apiKey,

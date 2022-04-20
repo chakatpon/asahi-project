@@ -12,11 +12,13 @@ import {
     Alert
 } from 'react-native';
 import axios   from 'axios';
+import DeviceInfo from 'react-native-device-info';
 const { width, height } = Dimensions.get('window');
 
 const endpoint  = 'https://asahigame.dev.kanda.digital/api';
 const apiKey    = '818EY26UYbZEYPZ76QwH4nVcTCtsLpYMnJQuI7Jn';
-const deviceUID = 'f8e36bab-66af-43fb-8e6b-4d66415687bc';
+const deviceUID = DeviceInfo.getUniqueId();
+const deviceName = DeviceInfo.getDeviceNameSync();
 export default class LockScreenPinCode extends Component {
 
   constructor(props){
